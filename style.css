@@ -1,43 +1,50 @@
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-  background: url('https://i.imgur.com/AghS3zz.jpeg') no-repeat center center fixed;
+  background-image: url("https://i.imgur.com/AghS3zz.jpeg");
   background-size: cover;
-  color: #fff;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
 }
 
 .container {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 25px;
+  border-radius: 15px;
+  width: 90%;
   max-width: 500px;
-  margin: auto;
-  background: rgba(0, 0, 0, 0.75);
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 60px;
-  box-shadow: 0 0 20px #00f2ff;
+  color: #fff;
+  text-align: center;
 }
 
 h1 {
-  text-align: center;
   margin-bottom: 20px;
+  font-size: 28px;
+  color: #00ffff;
 }
 
-form input, form textarea, form button {
+input, textarea {
   width: 100%;
   padding: 10px;
-  margin-top: 10px;
+  margin-bottom: 15px;
   border: none;
   border-radius: 8px;
 }
 
-form button {
-  background-color: #00f2ff;
-  color: black;
+button {
+  padding: 12px 25px;
+  background: #00ffcc;
+  border: none;
+  color: #000;
   font-weight: bold;
+  border-radius: 8px;
   cursor: pointer;
 }
 
-form button:hover {
-  background-color: #fff;
-  color: #000;
+footer {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #aaa;
 }
