@@ -1,17 +1,14 @@
 {
   "name": "rudra-multi-convo",
   "version": "1.0.0",
-  "description": "Send Facebook messages using personal ID and appstate.json",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "latest",
-    "fs-extra": "latest",
-    "multer": "latest",
-    "path": "latest",
     "body-parser": "latest",
+    "express-fileupload": "latest",
     "fca-unofficial": "latest"
   }
 }
