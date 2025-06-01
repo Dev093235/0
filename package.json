@@ -1,16 +1,17 @@
 {
   "name": "rudra-multi-convo",
   "version": "1.0.0",
-  "description": "Multi Facebook inbox convo tool using personal ID",
+  "description": "Send Facebook messages using personal ID and appstate.json",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "latest",
-    "multer": "latest",
     "fs-extra": "latest",
+    "multer": "latest",
     "path": "latest",
+    "body-parser": "latest",
     "fca-unofficial": "latest"
   }
 }
