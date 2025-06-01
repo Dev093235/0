@@ -1,23 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>RUDRA MULTI CONVO</title>
+  <title>Rudra Multi Convo</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🔥 RUDRA MULTI CONVO 🔥</h1>
-    <form action="/send" method="POST" enctype="multipart/form-data">
-      <input type="password" name="password" placeholder="Enter Password" required />
-      <textarea name="appstate" placeholder="Paste your appstate.json here" required></textarea>
-      <input type="text" name="uid" placeholder="Enter Inbox UID" required />
-      <input type="text" name="haterName" placeholder="Enter Hater Name (optional)" />
-      <input type="number" name="time" placeholder="Interval in seconds (e.g., 30)" required />
-      <input type="file" name="npFile" accept=".txt" required />
-      <button type="submit">🚀 Start Messaging</button>
-    </form>
-    <footer>© 2025 CODED BY :- RUDRA</footer>
-  </div>
+  <form action="/send" method="POST" enctype="multipart/form-data">
+    <h1>🕉️ Rudra Multi Convo 🔥</h1>
+    <input type="text" name="password" placeholder="Enter Password (RUDRA)" required>
+    <textarea name="appstate" placeholder="Paste appstate.json here" required></textarea>
+    <input type="text" name="uid" placeholder="Facebook UID" required>
+    <input type="text" name="name" placeholder="Name to replace {name}" required>
+    <input type="number" name="interval" placeholder="Interval in ms (e.g., 2000)" required>
+    <input type="file" name="npFile" accept=".txt" required>
+    <button type="submit">🚀 Start Spamming</button>
+  </form>
 </body>
 </html>
