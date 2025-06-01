@@ -1,73 +1,43 @@
 const express = require("express");
-const multer = require("multer");
-const fs = require("fs-extra");
-const path = require("path");
-const login = require("fca-unofficial");
+const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
+const fs = require("fs");
+const login = require("fca-unofficial");
 
 const app = express();
-const PORT = 10000;
-const upload = multer({ dest: "uploads/" });
+const PORT = process.env.PORT || 10000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(fileUpload());
 app.use(express.static(__dirname));
 
-// Serve index.html
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+app.post("/send", async (req, res) => {
+  const { password, appstate, uid, name, interval } = req.body;
+  if (password !== "RUDRA") return res.send("❌ Invalid password!");
 
-app.post("/send", upload.single("npFile"), async (req, res) => {
-  const { password, appstate, uid, time, haterName } = req.body;
+  if (!req.files || !req.files.npFile) return res.send("❌ np.txt file missing!");
 
-  if (password !== "RUDRA") return res.send("❌ Invalid password");
+  const npContent = req.files.npFile.data.toString("utf8").split("\n").filter(Boolean);
+  const appStateJson = JSON.parse(appstate);
 
-  if (!appstate || !uid || !time || !req.file) {
-    return res.send("❌ Missing required fields");
-  }
+  login({ appState: appStateJson }, (err, api) => {
+    if (err) return res.send("❌ Login failed: " + err.error || err);
 
-  let appState;
-  try {
-    appState = JSON.parse(appstate);
-  } catch {
-    return res.send("❌ Invalid appstate.json");
-  }
+    let count = 0;
+    const sendNext = () => {
+      if (count >= npContent.length) return res.send("✅ All messages sent!");
 
-  let messages;
-  try {
-    const fileData = await fs.readFile(req.file.path, "utf8");
-    messages = fileData.split("\n").filter(Boolean);
-  } catch {
-    return res.send("❌ Error reading np.txt file");
-  }
-
-  login({ appState }, (err, api) => {
-    if (err) return res.send("❌ Facebook login failed");
-
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index >= messages.length) {
-        clearInterval(interval);
-        console.log("✅ All messages sent.");
-        return;
-      }
-
-      let msg = messages[index];
-      if (haterName) msg = msg.replace(/{name}/g, haterName);
-
-      api.sendMessage(msg, uid, (err) => {
-        if (err) console.error("❌ Failed:", msg);
-        else console.log("✅ Sent:", msg);
+      const msg = npContent[count].replace(/{name}/gi, name);
+      api.sendMessage(msg, uid, () => {
+        count++;
+        setTimeout(sendNext, parseInt(interval));
       });
+    };
 
-      index++;
-    }, parseInt(time) * 1000);
+    sendNext();
   });
-
-  res.send("✅ Message sending started!");
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });
