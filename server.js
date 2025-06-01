@@ -3,49 +3,47 @@ const multer = require("multer");
 const fs = require("fs-extra");
 const path = require("path");
 const login = require("fca-unofficial");
+const bodyParser = require("body-parser");
 
 const app = express();
 const PORT = 10000;
-
 const upload = multer({ dest: "uploads/" });
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.static(__dirname));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+
+// Serve index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
 app.post("/send", upload.single("npFile"), async (req, res) => {
-  const { password, appState, uid, haterName, time } = req.body;
+  const { password, appstate, uid, time, haterName } = req.body;
 
-  if (password !== "RUDRA") {
-    return res.status(401).send("❌ Invalid password");
+  if (password !== "RUDRA") return res.send("❌ Invalid password");
+
+  if (!appstate || !uid || !time || !req.file) {
+    return res.send("❌ Missing required fields");
   }
 
-  if (!appState || !uid || !time || !req.file) {
-    return res.status(400).send("❌ Missing required fields");
-  }
-
-  const appStateParsed = (() => {
-    try {
-      return JSON.parse(appState);
-    } catch (e) {
-      return null;
-    }
-  })();
-
-  if (!Array.isArray(appStateParsed)) return res.status(400).send("❌ Invalid appstate format");
-
-  const filePath = path.join(__dirname, req.file.path);
-  let messages;
-
+  let appState;
   try {
-    const content = await fs.readFile(filePath, "utf8");
-    messages = content.split("\n").filter(Boolean);
+    appState = JSON.parse(appstate);
   } catch {
-    return res.status(500).send("❌ Couldn't read the uploaded file");
+    return res.send("❌ Invalid appstate.json");
   }
 
-  login({ appState: appStateParsed }, async (err, api) => {
-    if (err) return res.status(500).send("❌ Login failed");
+  let messages;
+  try {
+    const fileData = await fs.readFile(req.file.path, "utf8");
+    messages = fileData.split("\n").filter(Boolean);
+  } catch {
+    return res.send("❌ Error reading np.txt file");
+  }
+
+  login({ appState }, (err, api) => {
+    if (err) return res.send("❌ Facebook login failed");
 
     let index = 0;
     const interval = setInterval(() => {
@@ -56,10 +54,10 @@ app.post("/send", upload.single("npFile"), async (req, res) => {
       }
 
       let msg = messages[index];
-      if (haterName) msg = msg.replace("{name}", haterName);
+      if (haterName) msg = msg.replace(/{name}/g, haterName);
 
-      api.sendMessage(msg, uid, (e) => {
-        if (e) console.error("❌ Failed:", msg);
+      api.sendMessage(msg, uid, (err) => {
+        if (err) console.error("❌ Failed:", msg);
         else console.log("✅ Sent:", msg);
       });
 
